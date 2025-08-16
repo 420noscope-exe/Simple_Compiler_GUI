@@ -1,7 +1,14 @@
 #include "MainFrame.h"
+#include "GppCompiler.h"
 #include <wx/wx.h>
+#include <wx/dir.h>
+#include <wx/filename.h>
 #include <wx/spinctrl.h>
 #include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
 
 enum IDs{
     FOLDER_PATH_CTRL_ID = 2,
@@ -28,6 +35,13 @@ wxBEGIN_EVENT_TABLE(MainFrame, wxFrame)
 wxEND_EVENT_TABLE()
     
 MainFrame::MainFrame(const wxString& title): wxFrame(nullptr, wxID_ANY, title) {
+    folderPath = ".";
+    linkerFlags = "";
+    scannedFiles.Add("");
+    inFiles.Add("");
+    outFile = "";
+    optimizationLevel = 0;
+
     wxPanel* panel = new wxPanel(this);
     
     wxStaticText* folderPathStatic = new wxStaticText(panel, wxID_ANY, "Folder Path:", wxPoint(100,50));
@@ -46,7 +60,7 @@ MainFrame::MainFrame(const wxString& title): wxFrame(nullptr, wxID_ANY, title) {
     choices.Add("Item B");
     choices.Add("Item C");
     
-    wxListBox* FileListBox = new wxListBox(panel, FILE_LIST_BOX_ID, wxPoint(100, 150), wxSize(200, 250), choices, wxLB_MULTIPLE);
+    FileListBox = new wxListBox(panel, FILE_LIST_BOX_ID, wxPoint(100, 150), wxSize(200, 250), inFiles, wxLB_MULTIPLE);
     
     wxStaticText* optimizationLevelStatic = new wxStaticText(panel, wxID_ANY, "Optimization Level:", wxPoint(500,200));
     
@@ -108,28 +122,57 @@ MainFrame::MainFrame(const wxString& title): wxFrame(nullptr, wxID_ANY, title) {
 }
 
 void MainFrame::OnFolderPathCtrlChanged(wxCommandEvent& evt){
+    folderPath = evt.GetString();
     wxString str = wxString::Format("Folder path changed to %s", evt.GetString());
     std::cout << str << std::endl;
     wxLogStatus(str);
 }
 
 void MainFrame::OnLinkerFlagsCtrlChanged(wxCommandEvent& evt){
+    linkerFlags = evt.GetString();
     wxString str = wxString::Format("Linker flags changed to %s", evt.GetString());
     std::cout << str << std::endl;
     wxLogStatus(str);
 }
 
 void MainFrame::OnScanFolderButtonClicked(wxCommandEvent& evt){
-    std::cout << "Scanned folder at provided path." << std::endl;
-    wxLogStatus("Scanned folder at provided path.");
+    wxDir dir(folderPath);
+        if (dir.IsOpened())
+        {
+            scannedFiles.Empty(); //empties array before starting
+            dir.GetAllFiles(folderPath, &scannedFiles, "*.cpp", wxDIR_FILES);  //only adds .cpp files to the array
+            for (wxString& i : scannedFiles) //gives path to wxFileName and uses GetFullName to get rid of the filepath before the filename.  Otherwise, the whole path is displayed in the ListBox. 
+            {
+             wxFileName fn(i);
+             i = fn.GetFullName();   
+            }
+            FileListBox->Clear(); //Clears the ListBox before setting it
+            FileListBox->Set(scannedFiles);  //Sets the ListBox to contain the list of full FileNames that we just made, minus the filepath before the FileNames.
+            std::cout << "Scanned folder at provided path." << std::endl;
+            wxLogStatus("Scanned folder at provided path.");
+        }
+        else
+        {
+            std::cout << "Failed to open directory." << std::endl;
+            wxLogStatus("Failed to open directory.");
+        }
+
 }
 
 void MainFrame::OnFileListBoxChanged(wxCommandEvent& evt){
+    wxArrayInt indexes;
+    FileListBox->GetSelections(indexes);
+    inFiles.Empty();
+    for (int& i : indexes)
+    {
+        inFiles.Add(scannedFiles[i]);
+    }
     std::cout << "Selected files changed." << std::endl;
     wxLogStatus("Selected files changed.");
 }
 
 void MainFrame::OnOptimizationLevelRadioBoxChanged(wxCommandEvent& evt){
+    optimizationLevel = evt.GetSelection();
     wxString str = wxString::Format("Optimization level changed to %d", evt.GetSelection());
     std::cout << str << std::endl;
     wxLogStatus(str);
@@ -142,6 +185,7 @@ void MainFrame::OnJobsSpinCtrlChanged(wxSpinEvent& evt){
 }
 
 void MainFrame::OnOutputFileNameCtrlChanged(wxCommandEvent& evt){
+    outFile = evt.GetString();
     wxString str = wxString::Format("Output file name changed to %s", evt.GetString());
     std::cout << str << std::endl;
     wxLogStatus(str);
@@ -149,6 +193,8 @@ void MainFrame::OnOutputFileNameCtrlChanged(wxCommandEvent& evt){
 
 void MainFrame::OnCompileButtonClicked(wxCommandEvent& evt){
     std::cout << "Compile button clicked." << std::endl;
+    GppCompiler gppCompiler;
+    gppCompiler.runGpp(inFiles, outFile, linkerFlags, optimizationLevel);
     wxLogStatus("Compile button clicked.");
 }
 
@@ -157,3 +203,4 @@ void MainFrame::OnRunCheckBoxClicked(wxCommandEvent& evt){
     std::cout << str << std::endl;
     wxLogStatus(str);
 }
+
