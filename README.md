@@ -1,6 +1,12 @@
-# Simple_Compiler_GUI
+# CompileBuddy
+![2](2.png)
+# “Fast, Friendly, Compile‑Ready.”
 
-## Dependencies
+## Things to consider
+- CompileBuddy has only been compiled and tested on arch, but may work on other distros and Windows.
+- CompileBuddy currenty only supports using g++ to compile c++ binaries, but other compilers and languages are planned to be added.
+
+## Compile Dependencies
 -Requires that [wxWidgets be installed on your system](https://docs.wxwidgets.org/3.2/overview_install.html).  
 -Also requires [G++](https://gcc.gnu.org/install/)
 
@@ -17,7 +23,7 @@ Compile the project with:
 - **Scan** the folder.
 - **Select** one file, or multiple files by clicking and holding shift/ctrl.
 - Set your **Linker Flags**.
-- **Optmization Level** can be set.  This is optional.
+- **Optmization Level** can be set.  This is optional.  The default value is no optimization.
 - Click **Compile**.
 
 ## Features that currently do not work
