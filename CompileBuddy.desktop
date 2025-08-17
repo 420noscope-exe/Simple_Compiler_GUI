@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=CompileBuddy
+Exec=CompileBuddy
+Terminal=false
+Icon=app_icon.svg
+

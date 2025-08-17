@@ -23,7 +23,7 @@ Compile the project with:
 ## Features that currently do not work
 - **Run after compile?**
 - **Jobs**
-
+- **Console Output** below **Compile** button
 
 ## License
 

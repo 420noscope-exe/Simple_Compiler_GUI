@@ -1,5 +1,6 @@
 #include "MainFrame.h"
 #include "GppCompiler.h"
+#include "app_icon.xpm"
 #include <wx/wx.h>
 #include <wx/dir.h>
 #include <wx/filename.h>
@@ -41,6 +42,10 @@ MainFrame::MainFrame(const wxString& title): wxFrame(nullptr, wxID_ANY, title) {
     inFiles.Add("");
     outFile = "";
     optimizationLevel = 0;
+    
+    wxInitAllImageHandlers();
+    wxIcon icon(app_icon_xpm);
+    SetIcon(wxICON(app_icon));
 
     wxPanel* panel = new wxPanel(this);
     
@@ -194,7 +199,7 @@ void MainFrame::OnOutputFileNameCtrlChanged(wxCommandEvent& evt){
 void MainFrame::OnCompileButtonClicked(wxCommandEvent& evt){
     std::cout << "Compile button clicked." << std::endl;
     GppCompiler gppCompiler;
-    gppCompiler.runGpp(inFiles, outFile, linkerFlags, optimizationLevel);
+    gppCompiler.runGpp(folderPath, inFiles, outFile, linkerFlags, optimizationLevel);
     wxLogStatus("Compile button clicked.");
 }
 

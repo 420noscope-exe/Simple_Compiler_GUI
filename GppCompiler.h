@@ -12,7 +12,7 @@ public:
     ~GppCompiler();
 
     // Method to compile the code with G++, taking linker flags as a parameter
-    void runGpp(const wxArrayString& sourceFiles, const wxString& outputFile,
+    void runGpp(const wxString& folderPath, const wxArrayString& sourceFiles, const wxString& outputFile,
                 const wxString& flags, const int& optimizationLevel);
 
 private:

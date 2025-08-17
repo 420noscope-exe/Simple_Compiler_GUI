@@ -12,24 +12,24 @@ GppCompiler::GppCompiler() = default;
 GppCompiler::~GppCompiler() = default;
 
 // Method implementation to compile the code
-void GppCompiler::runGpp(const wxArrayString& sourceFiles, const wxString& outputFile,
+void GppCompiler::runGpp(const wxString& folderPath, const wxArrayString& sourceFiles, const wxString& outputFile,
                          const wxString& flags, const int& optimizationLevel) {
     wxString command = "g++ ";  //The g++ command.
     
-    command += optimizationLevelToString(optimizationLevel);  //Calls the ToString
+    command += optimizationLevelToString(optimizationLevel);  //Calls the ToString and adds the optimization level
     
     wxString sourceFilesString = "";
     
     for (const wxString& file : sourceFiles)
     {
-        sourceFilesString += file + " ";
+        sourceFilesString += "\"" + folderPath + "/" + file + "\"" + " ";
     }
     
     // Add source file
     command += sourceFilesString;
     
     // Add output option and file
-    command += "-o " + outputFile;
+    command += "-o \"" + folderPath + "/" + outputFile + "\"";
     
     if (!flags.empty()) {
         // Append linker flags after the -o option
